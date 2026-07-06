@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TruDi: Trust-Region Diffusion Policies for Massively Parallel On-Policy RL</title>
+<meta name="description" content="TruDi enables diffusion policies for on-policy RL with massively parallel simulations via a trajectory-level trust region. ICML 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }, chtml: { scale: 0.96 } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  --ink:#363636; --ink-2:#4a4a4a; --ink-3:#7a7a7a;
+  --link:#3273dc; --accent:#1e7a4e;
+  --band:#f5f7fa; --border:#e8e8e8;
+  --highlight:#fdebd2; --highlight-2:#dff0e8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink-2); background:#ffffff; font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:960px;margin:0 auto;padding:0 24px}
+.narrow{max-width:780px}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+strong{color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 8px;text-align:center}
+h1.pub-title{font-size:clamp(22px,2.4vw,28px);font-weight:700;color:var(--ink);
+  line-height:1.3;margin:0 auto 26px;text-wrap:balance}
+.publication-authors{font-size:17px;margin-bottom:10px}
+.author-block{white-space:nowrap}
+.author-block a{color:var(--link)}
+.publication-authors sup{font-size:.7em;color:var(--ink-3)}
+.affiliations{font-size:14.5px;color:var(--ink-2);margin-bottom:4px}
+.eqnote{font-size:13px;color:var(--ink-3);margin-bottom:14px}
+.venue{font-size:16px;color:var(--ink);font-weight:600;margin-bottom:22px}
+.link-blocks{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:16px}
+.button{display:inline-flex;align-items:center;gap:8px;background:#363636;color:#ffffff;
+  font-size:14.5px;font-weight:400;border-radius:999px;padding:8px 20px;transition:background .15s}
+.button:hover{background:#4a4a4a;text-decoration:none;color:#fff}
+.button .icon{font-size:15px;line-height:1}
+.button.disabled{background:#c9cdd2;color:#6d7278;cursor:not-allowed;pointer-events:none}
+.eq{overflow-x:auto;padding:6px 2px;margin:8px 0 2px}
+
+/* ---------- teaser ---------- */
+.teaser{padding:28px 0 40px;text-align:center}
+.figwrap{background:#ffffff;border:1px solid var(--border);border-radius:8px;
+  padding:16px;overflow-x:auto}
+.figwrap img{display:block;width:100%;height:auto;min-width:560px}
+.figwrap.fig-small img{min-width:0}
+.figcaption{font-size:14px;color:var(--ink-3);line-height:1.55;margin-top:12px;text-align:left}
+.figcaption b{color:var(--ink-2)}
+.tldr{max-width:820px;margin:26px auto 0;font-size:16.5px;text-align:center;color:var(--ink-2)}
+
+/* ---------- sections ---------- */
+section{padding:52px 0}
+section.is-light{background:var(--band)}
+h2.section-title{font-size:30px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:10px}
+.title-rule{width:44px;height:3px;background:var(--accent);border-radius:2px;margin:0 auto 30px}
+h3.sub{font-size:21px;font-weight:700;color:var(--ink);margin:44px 0 14px}
+h3.sub:first-of-type{margin-top:8px}
+p{margin-bottom:14px}
+.justify p{text-align:justify}
+.center-note{text-align:center;font-size:14px;color:var(--ink-3);font-style:italic;margin-top:10px}
+
+/* ---------- approach items ---------- */
+.item{background:#ffffff;border:1px solid var(--border);border-radius:8px;
+  padding:18px 22px;margin-bottom:14px}
+.is-light .item{border-color:#e2e6ea}
+.item .no{display:inline-block;font-weight:700;color:var(--accent);margin-right:6px}
+.contribs{list-style:none;max-width:860px;margin:0 auto}
+.contribs li{position:relative;padding-left:26px;margin-bottom:14px}
+.contribs li::before{content:"";position:absolute;left:2px;top:9px;width:9px;height:9px;
+  border-radius:50%;background:var(--accent)}
+
+/* ---------- results layout ---------- */
+.fig-center{max-width:780px;margin:16px auto 4px}
+.fig-center .figwrap{max-width:540px;margin-left:auto;margin-right:auto}
+.fig-center .caption-under{text-align:left;font-size:14.5px;line-height:1.6;margin-top:12px}
+.video-row{display:flex;flex-direction:column;align-items:center;gap:22px;margin:18px 0 4px}
+.video-card{width:100%;max-width:520px}
+.video-card video{width:100%;display:block;border:1px solid var(--border);border-radius:8px;background:#f0f0f0}
+.video-card .vlabel{text-align:center;font-size:14px;color:var(--ink-2);margin-top:8px;font-weight:600}
+.figure-block{margin:10px 0 6px}
+.sw{display:inline-block;width:20px;height:4px;border-radius:2px;vertical-align:middle;margin:0 2px}
+.caption-under{font-size:14px;color:var(--ink-3);line-height:1.55;margin-top:10px}
+.caption-under b{color:var(--ink-2)}
+.caption-em{text-align:center;font-size:14px;color:var(--ink-2);font-style:italic;
+  max-width:760px;margin:14px auto 0}
+.caption-em b{font-style:normal}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin:14px 0 4px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:#fff}
+th{font-size:13px;color:var(--ink);font-weight:700;text-align:left;
+  padding:9px 14px;border-bottom:2px solid #cfd4da}
+td{padding:8px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+tr:last-child td{border-bottom:2px solid #cfd4da}
+td.best{background:var(--highlight);color:var(--ink);font-weight:600}
+td.best2{background:var(--highlight-2);color:var(--ink);font-weight:600}
+td.method{color:var(--ink)}
+
+/* ---------- bibtex / footer ---------- */
+.bibtex{background:#ffffff;border:1px solid var(--border);border-radius:8px;
+  padding:20px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:13px;line-height:1.6;overflow-x:auto;white-space:pre;color:var(--ink-2);text-align:left}
+footer{padding:34px 0;text-align:center;font-size:14px;color:var(--ink-3)}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="container">
+    <h1 class="pub-title">Trust-Region Diffusion Policies for Massively Parallel On-Policy RL</h1>
+    <div class="publication-authors">
+      <span class="author-block"><a href="https://alr-kit.de/team/huy-le/">Huy Le</a><sup>1,2</sup>,</span>
+      <span class="author-block"><a href="https://onur4229.github.io/">Onur Celik</a><sup>*2</sup>,</span>
+      <span class="author-block"><a href="https://denisbless.github.io/">Denis Blessing</a><sup>*2</sup>,</span>
+      <span class="author-block"><a href="https://thobotics.github.io/">Tai Hoang</a><sup>*2</sup>,</span>
+      <span class="author-block"><a href="https://cvoelcker.de/">Claas A. Voelcker</a><sup>3</sup>,</span>
+      <span class="author-block"><a href="https://axelbr.github.io/">Axel Brunnbauer</a><sup>4</sup>,</span><br>
+      <span class="author-block"><a href="https://www.uni-ulm.de/in/ki/inst/alumni/felix-richter/">Felix Richter</a><sup>1</sup>,</span>
+      <span class="author-block"><a href="https://alr.iar.kit.edu/21_247.php">Michael Volpp</a><sup>1</sup>,</span>
+      <span class="author-block"><a href="https://alr-kit.de/team/geri/">Gerhard Neumann</a><sup>2</sup></span>
+    </div>
+    <div class="affiliations">
+      <span style="white-space:nowrap"><sup>1</sup>Bosch Center for Artificial Intelligence</span> &nbsp;
+      <span style="white-space:nowrap"><sup>2</sup>Autonomous Learning Robots, Karlsruhe Institute of Technology</span> &nbsp;
+      <span style="white-space:nowrap"><sup>3</sup>University of Texas at Austin</span> &nbsp;
+      <span style="white-space:nowrap"><sup>4</sup>Technische Universität Wien</span>
+    </div>
+    <div class="eqnote"><sup>*</sup>Equal contribution</div>
+    <div class="venue">Published at ICML 2026</div>
+    <div class="link-blocks">
+      <a class="button" href="https://arxiv.org/abs/2606.15260"><span class="icon">📄</span> arXiv</a>
+      <span class="button disabled" title="Code release coming soon"><span class="icon">💻</span> Code (coming soon)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TEASER ================= -->
+<div class="teaser">
+  <div class="container">
+    <div class="figwrap">
+      <img src="assets/fig2_main_results.png" alt="Aggregated IQM learning curves on five benchmarks: MuJoCo Playground DMC, ManiSkill3, IsaacLab, MuJoCo Playground Humanoid, and HumanoidBench. TruDi matches or exceeds all baselines and wins clearly on the humanoid benchmarks.">
+    </div>
+    <p class="figcaption"><b>Aggregated performance on five continuous-control benchmarks.</b> TruDi vs. strong on-policy baselines (REPPO, PPO) and the online diffusion method DIME; curves show the interquartile mean (IQM) of episode return with 95% stratified bootstrap confidence intervals over 10 seeds. <b>(a)</b> MuJoCo Playground DMC (20 tasks); <b>(b)</b> ManiSkill3 (14 tasks); <b>(c)</b> IsaacLab (6 tasks, normalized returns); <b>(d)</b> MuJoCo Playground Humanoid (4 tasks); <b>(e)</b> HumanoidBench (27 tasks). TruDi matches or exceeds strong baselines on standard control (a–c) and significantly outperforms all baselines on difficult, high-dimensional humanoid tasks (d–e).</p>
+    <p class="tldr"><strong>TL;DR:</strong> TruDi enables diffusion policies for on-policy RL with massively parallel simulations by enforcing a trust region over the entire diffusion trajectory, a tractable alternative to the intractable marginal KL constraint. Across 73 tasks from 4 benchmark suites, TruDi matches strong Gaussian on-policy baselines on standard control tasks and shows clear gains on challenging humanoid control.</p>
+  </div>
+</div>
+
+<!-- ================= ABSTRACT ================= -->
+<section class="is-light">
+  <div class="container narrow justify">
+    <h2 class="section-title">Abstract</h2>
+    <div class="title-rule"></div>
+    <p>Reinforcement learning with massively parallel simulations has become a standard framework for developing robust, deployable policies; however, most existing approaches still rely on simple Gaussian policy parameterizations. Diffusion models provide a more expressive policy class and have shown strong performance on challenging control problems, yet most diffusion-based RL methods are designed for offline or off-policy training.</p>
+    <p>In this work, we ask whether diffusion policies can be trained effectively in the massively parallel, on-policy regime. To this end, we introduce <strong>Trust-region Diffusion Policies (TruDi)</strong>, which enables diffusion policies for on-policy RL with massively parallel simulations. This setting is particularly challenging because the data distribution changes quickly across updates, making stable training with complex policies difficult. TruDi addresses this by integrating a trust-region optimization rule to enforce a KL-divergence constraint over the entire diffusion trajectory.</p>
+    <p>Empirically, we evaluate TruDi on a diverse set of 4 massively parallel RL benchmarks comprising a total of 73 tasks. Across these tasks, TruDi consistently outperforms or is on-par with strong baselines on standard tasks and achieves clear gains on more challenging humanoid control tasks, establishing a strong new baseline for massively parallel on-policy RL.</p>
+  </div>
+</section>
+
+<!-- ================= CHALLENGE + APPROACH ================= -->
+<section>
+  <div class="container narrow">
+    <h2 class="section-title">The Challenge</h2>
+    <div class="title-rule"></div>
+    <p style="text-align:justify">Trust-region constraints are essential for stable on-policy RL: they prevent premature convergence when the data distribution shifts rapidly between updates. Enforcing them requires the policy's action likelihood, which is intractable for diffusion policies because the executed action is the marginal of the full reverse denoising chain. Prior diffusion-RL methods therefore train off-policy with large replay buffers, which reintroduces the memory bottleneck that massively parallel on-policy training avoids.</p>
+  </div>
+  <div class="container narrow" style="margin-top:26px">
+    <h2 class="section-title">Our Approach: TruDi</h2>
+    <div class="title-rule"></div>
+    <div class="item"><span class="no">1. Trajectory-level trust region.</span> TruDi views the denoising process as a latent-variable model. The data-processing inequality then gives a tractable upper bound: the KL between the marginal action distributions is bounded by the KL between the joint distributions over full diffusion trajectories,
+      <div class="eq">\[ D_{\mathrm{KL}}\!\left(\overleftarrow{\pi}^{\,0}_{\mathrm{old}}(a^0 \mid s) \,\big\|\, \overleftarrow{\pi}^{\,0}_{\theta}(a^0 \mid s)\right) \;\le\; D_{\mathrm{KL}}\!\left(\overleftarrow{\pi}^{\,0:N}_{\mathrm{old}}(a^{0:N} \mid s) \,\big\|\, \overleftarrow{\pi}^{\,0:N}_{\theta}(a^{0:N} \mid s)\right). \]</div>
+      Constraining this bound enforces a trust region over the whole generation process. Together with the same inequality applied to the maximum-entropy objective, this yields the optimization problem
+      <div class="eq">\[ \min_{\theta}\; \mathbb{E}_{\rho^{\pi}}\!\left[ D_{\mathrm{KL}}\!\left(\overleftarrow{\pi}^{\,0:N}_{\theta} \,\big\|\, \overrightarrow{\pi}^{\,0:N}\right) \right] \quad \text{s.t.} \quad \mathbb{E}_{\rho^{\pi}}\!\left[ D_{\mathrm{KL}}\!\left(\overleftarrow{\pi}^{\,0:N}_{\mathrm{old}} \,\big\|\, \overleftarrow{\pi}^{\,0:N}_{\theta}\right) \right] \le \epsilon, \]</div>
+      where \(\overleftarrow{\pi}\) denotes the denoising (generative) process and \(\overrightarrow{\pi}\) the noising process, whose action marginal is anchored at the Boltzmann distribution \( \exp\!\left(Q^{\pi_{\mathrm{old}}}(s,a^0)/\alpha\right)/\mathcal{Z}(s) \) of the soft Q-function. This is where the reward signal enters the objective. Both KL terms factorize over the diffusion steps and can be approximated from samples.</div>
+    <div class="item"><span class="no">2. Maximum-entropy actor–critic with dual descent.</span> TruDi follows REPPO-style primal–dual updates: a soft Q-function fitted with TD-λ and HL-Gauss, a split objective that switches to a pure trust-region penalty whenever the constraint is violated, and auto-tuned entropy temperature α and Lagrangian multiplier λ.</div>
+    <div class="item"><span class="no">3. Probability-flow ODE for evaluation.</span> At evaluation time, actions are generated deterministically by an Euler discretization of the probability-flow ODE, with the score scaled by a factor \(c\):
+      <div class="eq">\[ a^{n-1} = a^{n} + \left( \beta^{n} a^{n} + 2c\,\eta^{2}\beta^{n}\, \nabla \log \overrightarrow{\pi}^{\,n}(a^{n} \mid s) \right)\delta. \]</div>
+      For \(c = \tfrac{1}{2}\) this is the deterministic counterpart of the reverse SDE and matches its marginals. Scaling the score can be read as tempering the intermediate marginals, since \( c\,\nabla \log \overrightarrow{\pi}^{\,n}(a^{n} \mid s) = \nabla \log \left(\overrightarrow{\pi}^{\,n}(a^{n} \mid s)\right)^{c} \). Larger values of \(c\) therefore sharpen the marginals and bias trajectories toward high-density, high-return regions.</div>
+    <div class="figwrap" style="margin-top:24px">
+      <img src="assets/fig1_score_scaling.png" alt="Denoising trajectories under SDE sampling, ODE with c=0.5, and ODE with c=1.0. Higher score scaling sharpens marginal distributions and produces greedier samples.">
+    </div>
+    <p class="figcaption"><b>Scaling the score function induces greedier sampling.</b> Trajectories of the denoising process from the Gaussian prior (right) to the target action distribution (left). <b>(a)</b> stochastic SDE sampling; <b>(b)</b> the probability-flow ODE with score scale <i>c</i> = 0.5 matches the SDE's marginals; <b>(c)</b> <i>c</i> = 1.0 sharpens the intermediate marginals and concentrates trajectories on the modes. In practice this yields higher returns at evaluation time.</p>
+  </div>
+</section>
+
+<!-- ================= CONTRIBUTIONS ================= -->
+<section class="is-light">
+  <div class="container">
+    <h2 class="section-title">Contributions</h2>
+    <div class="title-rule"></div>
+    <ul class="contribs">
+      <li>A principled framework for training diffusion policies on-policy in massively parallel simulation, based on a trust-region constraint over the full diffusion trajectory.</li>
+      <li>An empirical evaluation across 73 tasks on standard continuous-control and large-scale robotic benchmarks. TruDi is competitive with strong Gaussian on-policy baselines on standard tasks and shows clear gains on high-dimensional humanoid control.</li>
+      <li>Analyses of the key design choices: the trust-region threshold ε, sampling strategies for policy evaluation (SDE, ODE, best-of-K), and multimodality on symmetric tasks.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section>
+  <div class="container">
+    <h2 class="section-title">Results</h2>
+    <div class="title-rule"></div>
+
+    <p style="text-align:justify">The aggregated comparison across all 73 tasks is shown in the teaser figure above. TruDi and REPPO form the top tier on standard control (DMC, ManiSkill3, IsaacLab), while on the humanoid suites TruDi opens a clear gap over every baseline. The largest gains appear on the hardest environments (window cleaning, balancing, hurdling, and cube), where Gaussian baselines frequently plateau early. The sections below look at individual findings in more detail.</p>
+
+    <h3 class="sub">Comparison with Diffusion &amp; Flow-Based Policies</h3>
+    <p style="text-align:justify">We also compare against two methods with expressive generative policies: DPPO, which applies PPO-style clipping to diffusion policies, and FPO, which uses flow matching. On the DMC suite, TruDi achieves comparable or better sample efficiency than FPO and clearly outperforms DPPO. This gap becomes much more pronounced on the high-dimensional Humanoid tasks, where DPPO and FPO make little progress while TruDi learns reliably.</p>
+    <p style="text-align:justify">These results suggest that the trajectory-level trust-region formulation, rather than per-step clipping, is what makes expressive policies viable in the massively parallel on-policy setting.</p>
+    <div class="fig-center">
+      <div class="figwrap fig-small">
+        <img src="assets/fig3_diffusion_baselines.png" alt="Learning curves comparing TruDi, FPO and DPPO on MuJoCo Playground DMC (left) and Humanoid (right).">
+      </div>
+      <p class="caption-under"><b>Left:</b> MuJoCo Playground DMC. <b>Right:</b> MuJoCo Playground Humanoid, where the gap is most pronounced.</p>
+    </div>
+
+    <h3 class="sub">Multimodality on Symmetric Tasks</h3>
+    <p>PushT (rotating a T-block 180°, where clockwise and counter-clockwise are both optimal) and StackCube (where red-on-blue and blue-on-red are both optimal) each have two symmetric optimal solutions. Behavior entropy over 200 deterministic runs measures whether a policy captures both modes (1 = perfectly balanced, 0 = mode collapse). Best results highlighted in <span style="background:var(--highlight);padding:0 4px;border-radius:3px">orange</span>.</p>
+    <div class="tablewrap" style="max-width:640px;margin-left:auto;margin-right:auto">
+      <table>
+        <thead><tr><th>Task</th><th>Method</th><th>Entropy ↑</th><th>Episode Return</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3" class="method">PushT</td><td class="method">REPPO</td><td>0</td><td>154.92 ± 5.85</td></tr>
+          <tr><td class="method">DIME</td><td>0.20 ± 0.20</td><td class="best">171.92 ± 1.08</td></tr>
+          <tr><td class="method">TruDi</td><td class="best">0.32 ± 0.13</td><td>167.32 ± 4.42</td></tr>
+          <tr><td rowspan="3" class="method">StackCube</td><td class="method">REPPO</td><td>0</td><td>83.92 ± 0.24</td></tr>
+          <tr><td class="method">DIME</td><td>0.68 ± 0.15</td><td>84.40 ± 0.69</td></tr>
+          <tr><td class="method">TruDi</td><td class="best">0.87 ± 0.08</td><td class="best">84.69 ± 0.10</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption-em" style="margin-top:10px"><b>The Gaussian baseline collapses to a single deterministic solution (entropy 0) on both tasks.</b> TruDi captures both modes without sacrificing return.</p>
+    <div class="video-row">
+      <div class="video-card">
+        <video autoplay controls muted loop playsinline poster="assets/poster_pusht.png">
+          <source src="assets/pusht_modes.mp4" type="video/mp4">
+        </video>
+        <p class="vlabel">PushT: the two rotation directions, one per mode</p>
+      </div>
+      <div class="video-card">
+        <video autoplay controls muted loop playsinline poster="assets/poster_stackcube.png">
+          <source src="assets/stackcube_modes.mp4" type="video/mp4">
+        </video>
+        <p class="vlabel">StackCube: blue-on-red and red-on-blue solutions</p>
+      </div>
+    </div>
+    <p class="caption-under" style="text-align:center">Each environment admits two equivalent optimal strategies, creating a bimodal optimization problem.</p>
+
+    <h3 class="sub">Computational Efficiency &amp; Wall-Clock Time</h3>
+    <div class="tablewrap" style="max-width:640px;margin-left:auto;margin-right:auto">
+      <table>
+        <thead><tr><th>Method</th><th>Training Time (h)</th><th>Episode Return (IQM)</th></tr></thead>
+        <tbody>
+          <tr><td class="method">PPO</td><td>0.95 ± 0.35</td><td>0.1 ± 3.7</td></tr>
+          <tr><td class="method">REPPO</td><td>1.07 ± 0.35</td><td>29.6 ± 7.2</td></tr>
+          <tr><td class="method">DIME</td><td>1.38 ± 0.36</td><td>15.6 ± 9.4</td></tr>
+          <tr><td class="method"><strong>TruDi (Ours)</strong></td><td>1.95 ± 0.46</td><td class="best">34.8 ± 3.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption-em" style="margin-top:10px"><b>Wall-clock cost and performance after 50M steps on MuJoCo Playground Humanoid.</b> TruDi achieves the highest performance with a manageable increase in training duration.</p>
+    <div class="fig-center">
+      <div class="figwrap fig-small">
+        <img src="assets/fig5_wallclock_steps.png" alt="Left: TruDi outperforms REPPO under a matched wall-clock budget. Right: ablation over diffusion steps T; performance saturates at T=8.">
+      </div>
+      <p class="caption-under"><b>Left:</b> wall-clock comparison (<span class="sw" style="background:#206040"></span> TruDi, <span class="sw" style="background:#306090"></span> REPPO): under a strictly matched budget (≈ 2.5 h), TruDi still substantially outperforms REPPO, and extending REPPO's training to 150M steps yields no further improvement. <b>Right:</b> diffusion-step ablation for TruDi, <i>T</i> ∈ {1, 4, 8, 16, 32}; line color encodes the step count, from <span class="sw" style="background:#b0d0e0"></span> <i>T</i> = 1 (light) to <span class="sw" style="background:#003070"></span> <i>T</i> = 32 (dark). <i>T</i> = 1 fails to learn and performance saturates at <i>T</i> = 8.</p>
+    </div>
+    <p class="caption-em">TruDi's advantage stems from the expressiveness of the diffusion policy and the stability of the trust-region updates rather than from additional compute time.</p>
+
+    <h3 class="sub">Ablation Studies</h3>
+    <p style="text-align:justify"><strong>Sensitivity to the trust-region threshold.</strong> We sweep ε from 0.01 to 50 on IsaacLab. When the constraint is too loose, the update behaves like the unconstrained case and final return drops clearly; when it is too strict, learning slows down. A broad intermediate band (ε ≈ 0.1 to 0.4) works best.</p>
+    <p style="text-align:justify"><strong>Evaluation strategies.</strong> The probability-flow ODE with score scale <i>c</i> = 1.0 consistently outperforms SDE sampling and best-of-K selection with the learned Q-function (K = 10, 20). Tracing deterministically to the mode of the policy distribution is more reliable than sampling around it.</p>
+    <div class="fig-center">
+      <div class="figwrap fig-small">
+        <img src="assets/fig6_ablations.png" alt="Left: sensitivity to the trust-region threshold epsilon on IsaacLab. Right: ODE evaluation beats SDE sampling and best-of-K selection on Humanoid.">
+      </div>
+      <p class="caption-under"><b>Left:</b> threshold sweep on IsaacLab; line color encodes ε on a log scale, from <span class="sw" style="background:#90d0b0"></span> ε = 0.01 (strict) through <span class="sw" style="background:#60c0c0"></span> the best-performing band ε ≈ 0.1–0.4 to <span class="sw" style="background:#004080"></span> ε = 50 (loose). <b>Right:</b> evaluation strategies on MuJoCo Playground Humanoid: <span class="sw" style="background:#c03020"></span> SDE sampling, <span class="sw" style="background:#206040"></span> ODE (<i>c</i> = 1.0), <span class="sw" style="background:#806060"></span> best-of-10, <span class="sw" style="background:#8040a0"></span> best-of-20.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BIBTEX ================= -->
+<section class="is-light" id="bibtex">
+  <div class="container narrow">
+    <h2 class="section-title">BibTeX</h2>
+    <div class="title-rule"></div>
+<div class="bibtex">@inproceedings{
+  le2026trustregion,
+  title={Trust-Region Diffusion Policies for Massively Parallel On-Policy {RL}},
+  author={Huy Le and Onur Celik and Denis Blessing and Tai Hoang and Claas A Voelcker and Axel Brunnbauer and Felix Richter and Michael Volpp and Gerhard Neumann},
+  booktitle={Forty-third International Conference on Machine Learning},
+  year={2026},
+  url={https://openreview.net/forum?id=mGu2fs7kJt}
+}</div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Trust-Region Diffusion Policies (TruDi) · ICML 2026</p>
+    <p style="margin-top:6px;font-size:13px">Page design inspired by the <a href="https://nerfies.github.io/">Nerfies</a> project page template.</p>
+  </div>
+</footer>
+
+</body>
+</html>
