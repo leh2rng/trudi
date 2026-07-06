@@ -22,7 +22,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }, 
 html{scroll-behavior:smooth}
 body{
   font-family:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  color:var(--ink-2); background:#ffffff; font-size:16px; line-height:1.65;
+  color:var(--ink-2); background:#ffffff; font-size:17.5px; line-height:1.65;
   -webkit-font-smoothing:antialiased;
 }
 .container{max-width:960px;margin:0 auto;padding:0 24px}
@@ -39,7 +39,7 @@ h1.pub-title{font-size:clamp(22px,2.4vw,28px);font-weight:700;color:var(--ink);
 .author-block{white-space:nowrap}
 .author-block a{color:var(--link)}
 .publication-authors sup{font-size:.7em;color:var(--ink-3)}
-.affiliations{font-size:14.5px;color:var(--ink-2);margin-bottom:4px}
+.affiliations{font-size:15.5px;color:var(--ink-2);margin-bottom:4px}
 .eqnote{font-size:13px;color:var(--ink-3);margin-bottom:14px}
 .venue{font-size:16px;color:var(--ink);font-weight:600;margin-bottom:22px}
 .link-blocks{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:16px}
@@ -56,9 +56,9 @@ h1.pub-title{font-size:clamp(22px,2.4vw,28px);font-weight:700;color:var(--ink);
   padding:16px;overflow-x:auto}
 .figwrap img{display:block;width:100%;height:auto;min-width:560px}
 .figwrap.fig-small img{min-width:0}
-.figcaption{font-size:14px;color:var(--ink-3);line-height:1.55;margin-top:12px;text-align:left}
+.figcaption{font-size:15.5px;color:var(--ink-3);line-height:1.55;margin-top:12px;text-align:left}
 .figcaption b{color:var(--ink-2)}
-.tldr{max-width:820px;margin:26px auto 0;font-size:16.5px;text-align:center;color:var(--ink-2)}
+.tldr{max-width:820px;margin:26px auto 0;font-size:18px;text-align:center;color:var(--ink-2)}
 
 /* ---------- sections ---------- */
 section{padding:52px 0}
@@ -84,23 +84,23 @@ p{margin-bottom:14px}
 /* ---------- results layout ---------- */
 .fig-center{max-width:780px;margin:16px auto 4px}
 .fig-center .figwrap{max-width:540px;margin-left:auto;margin-right:auto}
-.fig-center .caption-under{text-align:left;font-size:14.5px;line-height:1.6;margin-top:12px}
+.fig-center .caption-under{text-align:left;font-size:15.5px;line-height:1.6;margin-top:12px}
 .video-row{display:flex;flex-direction:column;align-items:center;gap:22px;margin:18px 0 4px}
 .video-card{width:100%;max-width:520px}
 .video-card video{width:100%;display:block;border:1px solid var(--border);border-radius:8px;background:#f0f0f0}
-.video-card .vlabel{text-align:center;font-size:14px;color:var(--ink-2);margin-top:8px;font-weight:600}
+.video-card .vlabel{text-align:center;font-size:15px;color:var(--ink-2);margin-top:8px;font-weight:600}
 .figure-block{margin:10px 0 6px}
 .sw{display:inline-block;width:20px;height:4px;border-radius:2px;vertical-align:middle;margin:0 2px}
-.caption-under{font-size:14px;color:var(--ink-3);line-height:1.55;margin-top:10px}
+.caption-under{font-size:15px;color:var(--ink-3);line-height:1.55;margin-top:10px}
 .caption-under b{color:var(--ink-2)}
-.caption-em{text-align:center;font-size:14px;color:var(--ink-2);font-style:italic;
+.caption-em{text-align:center;font-size:15px;color:var(--ink-2);font-style:italic;
   max-width:760px;margin:14px auto 0}
 .caption-em b{font-style:normal}
 
 /* ---------- tables ---------- */
 .tablewrap{overflow-x:auto;margin:14px 0 4px}
-table{width:100%;border-collapse:collapse;font-size:14.5px;background:#fff}
-th{font-size:13px;color:var(--ink);font-weight:700;text-align:left;
+table{width:100%;border-collapse:collapse;font-size:15.5px;background:#fff}
+th{font-size:13.5px;color:var(--ink);font-weight:700;text-align:left;
   padding:9px 14px;border-bottom:2px solid #cfd4da}
 td{padding:8px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
 tr:last-child td{border-bottom:2px solid #cfd4da}
@@ -112,7 +112,7 @@ td.method{color:var(--ink)}
 .bibtex{background:#ffffff;border:1px solid var(--border);border-radius:8px;
   padding:20px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:13px;line-height:1.6;overflow-x:auto;white-space:pre;color:var(--ink-2);text-align:left}
-footer{padding:34px 0;text-align:center;font-size:14px;color:var(--ink-3)}
+footer{padding:34px 0;text-align:center;font-size:15px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -286,7 +286,7 @@ footer{padding:34px 0;text-align:center;font-size:14px;color:var(--ink-3)}
       <div class="figwrap fig-small">
         <img src="assets/fig6_ablations.png" alt="Left: sensitivity to the trust-region threshold epsilon on IsaacLab. Right: ODE evaluation beats SDE sampling and best-of-K selection on Humanoid.">
       </div>
-      <p class="caption-under"><b>Left:</b> threshold sweep on IsaacLab; line color encodes ε on a log scale, from <span class="sw" style="background:#90d0b0"></span> ε = 0.01 (strict) through <span class="sw" style="background:#60c0c0"></span> the best-performing band ε ≈ 0.1–0.4 to <span class="sw" style="background:#004080"></span> ε = 50 (loose). <b>Right:</b> evaluation strategies on MuJoCo Playground Humanoid: <span class="sw" style="background:#c03020"></span> SDE sampling, <span class="sw" style="background:#206040"></span> ODE (<i>c</i> = 1.0), <span class="sw" style="background:#806060"></span> best-of-10, <span class="sw" style="background:#8040a0"></span> best-of-20.</p>
+      <p class="caption-under"><b>Left:</b> sensitivity to the trust-region threshold on IsaacLab. Line color encodes ε on a log scale: <span class="sw" style="background:#90d0b0"></span>&nbsp;ε&nbsp;=&nbsp;0.01 (strict) &rarr; <span class="sw" style="background:#60c0c0"></span>&nbsp;ε&nbsp;≈&nbsp;0.1–0.4 (best) &rarr; <span class="sw" style="background:#004080"></span>&nbsp;ε&nbsp;=&nbsp;50 (loose).<br><b>Right:</b> evaluation strategies on MuJoCo Playground Humanoid (legend in the plot). The probability-flow ODE with <i>c</i>&nbsp;=&nbsp;1.0 performs best.</p>
     </div>
   </div>
 </section>
